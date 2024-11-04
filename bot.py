@@ -1,94 +1,55 @@
 import logging
 import logging.config
-from pyrogram import Client 
-from config import API_ID, API_HASH, BOT_TOKEN, PORT
-from aiohttp import web
-from plugins.web_support import web_server
 
 logging.config.fileConfig('logging.conf')
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
+logging.getLogger("imdbpy").setLevel(logging.ERROR)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logging.getLogger("aiohttp").setLevel(logging.ERROR)
+logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
+
+import os
+from pyrogram import  __version__
+from pyrogram.raw.all import layer
 
 
-class Bot(Client):
-
-    def __init__(self):
-        super().__init__(
-            name="instascrapper",
-            api_id=API_ID,
-            api_hash=API_HASH,
-            bot_token=BOT_TOKEN,
-            workers=50,
-            plugins={"root": "plugins"},
-            sleep_threshold=5,
-        )
-
-    async def start(self):
-       await super().start()
-       me = await self.get_me()
-       self.mention = me.mention
-       self.username = me.username 
-       app = web.AppRunner(await web_server())
-       await app.setup()
-       bind_address = "0.0.0.0"
-       await web.TCPSite(app, bind_address, PORT).start()
-       logging.info(f"{me.first_name} ✅✅ BOT started successfully - ✅✅")
-
-    async def stop(self, *args):
-      await super().stop()      
-      logging.info("Bot Stopped 🙄 - \nContact @LazyDeveloper on telegram for any query")
-        
-bot = Bot()
-import logging
-import logging.config
-from pyrogram import Client 
-from config import API_ID, API_HASH, BOT_TOKEN, PORT
 from aiohttp import web
 from plugins.web_support import web_server
 
-logging.config.fileConfig('logging.conf')
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger("pyrogram").setLevel(logging.ERROR)
+import asyncio
+from pyrogram import idle
+from lazydeveloper import Lazydeveloper
+from config import *
 
-class Bot(Client):
-    def __init__(self):
-        super().__init__(
-            name="instascrapper",
-            api_id=API_ID,
-            api_hash=API_HASH,
-            bot_token=BOT_TOKEN,
-            workers=50,
-            plugins={"root": "plugins"},
-            sleep_threshold=5,
-        )
+PORT = "8080"
+Lazydeveloper.start()
+loop = asyncio.get_event_loop()
 
-    async def start(self):
-        await super().start()
-        me = await self.get_me()
-        self.mention = me.mention
-        self.username = me.username 
-        app = web.AppRunner(await web_server())
-        await app.setup()
-        bind_address = "0.0.0.0"
-        await web.TCPSite(app, bind_address, PORT).start()
-        logging.info(f"{me.first_name} ✅✅ BOT started successfully - ✅✅")
+async def Lazy_start():
+    print('\n')
+    print(' Initalizing Telegram Bot ')
+    if not os.path.isdir(DOWNLOAD_DIR):
+        os.makedirs(DOWNLOAD_DIR)
+    bot_info = await Lazydeveloper.get_me()
+    Lazydeveloper.username = bot_info.username
+    
+    me = await Lazydeveloper.get_me()
 
-    async def stop(self, *args):
-        await super().stop()      
-        logging.info("Bot Stopped 🙄 - \nContact @LazyDeveloper on telegram for any query")
+    app = web.AppRunner(await web_server())
+    await app.setup()
+    bind_address = "0.0.0.0"
+    await web.TCPSite(app, bind_address, PORT).start()
+    logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
+    await idle()
 
-# Create a global bot instance
-bot = Bot()
-
-async def main():
-    await bot.start()
-    print("Bot is running...")
-
-    # Keep the bot running indefinitely
-    await bot.idle()
-
-# Run the main function
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
-
+if __name__ == '__main__':
+    try:
+        loop.run_until_complete(Lazy_start())
+        logging.info('-----------------------🧐 Service running in Lazy Mode 😴-----------------------')
+    except KeyboardInterrupt:
+        logging.info('-----------------------😜 Service Stopped Sweetheart 😝-----------------------')

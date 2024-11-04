@@ -8,10 +8,6 @@ API_HASH = os.environ.get("API_HASH", "")
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "") 
 
-DB_NAME = os.environ.get("DB_NAME","")     
-
-DB_URL = os.environ.get("DB_URL","")
- 
 FLOOD = int(os.environ.get("FLOOD", "10"))
 
 START_PIC = os.environ.get("START_PIC", "")
