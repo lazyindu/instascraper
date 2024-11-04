@@ -8,6 +8,7 @@ from config import START_PIC, FLOOD, ADMIN
 
 # Initialize Instagram loader
 L = instaloader.Instaloader()
+L.login("lazyprincesx", "zxc@786")
 
 @Client.on_message(filters.private & filters.command(["start"]))
 async def start(client, message):
