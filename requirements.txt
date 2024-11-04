@@ -7,3 +7,4 @@ TgCrypto
 dnspython
 aiohttp
 instaloader
+loggers
